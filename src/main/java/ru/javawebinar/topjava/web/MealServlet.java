@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.MealServiceImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -15,7 +14,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -73,6 +75,51 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+            case "dateFilter":
+                log.info("get date filter");
+                String from = request.getParameter("fromDate");
+                String to = request.getParameter("toLd");
+                LocalDate fromLd;
+                LocalDate toLd;
+                if(from.isEmpty())
+                    fromLd = LocalDate.MAX;
+                else
+                    fromLd = LocalDate.parse(from,DateTimeFormatter.ISO_DATE);
+
+                if(to.isEmpty())
+                    toLd = LocalDate.MIN;
+                else
+                    toLd = LocalDate.parse(to,DateTimeFormatter.ISO_DATE);
+
+                request.setAttribute("meals",
+                        MealsUtil.getDateFilteredWithExceeded(controller.getAll(SecurityUtil.authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, fromLd, toLd));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+            case "timeFilter":
+                log.info("get time filter");
+                String fromTime = request.getParameter("from");
+                String toTime = request.getParameter("to");
+                LocalTime fromLt;
+                LocalTime toLt;
+
+                if (fromTime.isEmpty())
+                    fromLt = LocalTime.MIN;
+                else
+                    fromLt = LocalTime.parse(fromTime,DateTimeFormatter.ISO_TIME);
+
+                if (toTime.isEmpty())
+                    toLt = LocalTime.MAX;
+                else
+                    toLt = LocalTime.parse(toTime,DateTimeFormatter.ISO_TIME);
+
+                request.setAttribute("meals",
+                        MealsUtil.getTimeFilteredWithExceeded(controller.getAll(SecurityUtil.authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, fromLt, toLt));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+            case "login" :
+                String example = request.getParameter("user");
+                SecurityUtil.setAuthId(Integer.valueOf(example));
+
             case "all":
             default:
                 log.info("getAll");
