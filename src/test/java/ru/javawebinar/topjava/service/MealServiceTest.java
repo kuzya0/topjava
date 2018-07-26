@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -47,6 +48,9 @@ public class MealServiceTest {
     @Test
     public void create() throws Exception {
         Meal created = getCreated();
+        User u = new User();
+        u.setId(USER_ID);
+        created.setUser(u);
         service.create(created, USER_ID);
         assertMatch(service.getAll(USER_ID), created, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
     }
@@ -54,6 +58,9 @@ public class MealServiceTest {
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
+        User u = new User();
+        u.setId(ADMIN_ID);
+        ADMIN_MEAL1.setUser(u);
         assertMatch(actual, ADMIN_MEAL1);
     }
 
@@ -65,6 +72,11 @@ public class MealServiceTest {
     @Test
     public void update() throws Exception {
         Meal updated = getUpdated();
+        User u = new User();
+        u.setId(USER_ID);
+
+        updated.setUser(u);
+
         service.update(updated, USER_ID);
         assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
