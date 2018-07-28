@@ -5,8 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +22,7 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
+
         if (meal.isNew()) {
             em.persist(meal);
             return meal;
@@ -31,17 +34,27 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     @Transactional
     public boolean delete(int id, int userId) {
-        return em.createNamedQuery(Meal.DELETE)
+        int executeUpdate = em.createNamedQuery(Meal.DELETE)
                 .setParameter("id", id)
-                .executeUpdate() != 0;
+                .setParameter("userId", userId)
+                .executeUpdate();
+        if (executeUpdate == 0) throw new NotFoundException("not found meal id =" + id);
+        return true;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return em.createNamedQuery(Meal.GET_USERS_MEAL, Meal.class)
-                .setParameter("userId", userId)
-                .setParameter("id", id)
-                .getSingleResult();
+        Meal singleResult;
+        try {
+            singleResult = em.createNamedQuery(Meal.GET_USERS_MEAL, Meal.class)
+                    .setParameter("userId", userId)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        }
+        catch (NoResultException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+        return singleResult;
     }
 
     @Override

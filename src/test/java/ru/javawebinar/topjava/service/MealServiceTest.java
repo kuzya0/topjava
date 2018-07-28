@@ -15,6 +15,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -83,12 +85,18 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void updateNotFound() throws Exception {
-        service.update(MEAL1, ADMIN_ID);
+        Meal updated = MEAL1;
+        User u = new User();
+        u.setId(1);
+
+        updated.setUser(u);
+
+        service.update(updated, ADMIN_ID);
     }
 
     @Test
     public void getAll() throws Exception {
-        assertMatch(service.getAll(USER_ID), MEALS);
+        assertEquals(service.getAll(USER_ID), MEALS);
     }
 
     @Test
