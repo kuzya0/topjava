@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -17,6 +18,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -34,8 +36,8 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class MealServiceTest {
+@ActiveProfiles( resolver= ActiveDbProfileResolver.class)
+public abstract class MealServiceTest {
     private static final Logger log = getLogger("result");
 
     private static StringBuilder results = new StringBuilder();
@@ -85,7 +87,10 @@ public class MealServiceTest {
 
     @Test
     public void create() throws Exception {
+        User u = new User();
+        u.setId(USER_ID);
         Meal created = getCreated();
+        created.setUser(u);
         service.create(created, USER_ID);
         assertMatch(service.getAll(USER_ID), created, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
     }
@@ -104,7 +109,10 @@ public class MealServiceTest {
 
     @Test
     public void update() throws Exception {
+        User u = new User();
+        u.setId(USER_ID);
         Meal updated = getUpdated();
+        updated.setUser(u);
         service.update(updated, USER_ID);
         assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
@@ -113,6 +121,10 @@ public class MealServiceTest {
     public void updateNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
         thrown.expectMessage("Not found entity with id=" + MEAL1_ID);
+        User u = new User();
+        u.setId(USER_ID);
+        Meal updated = MEAL1;
+        updated.setUser(u);
         service.update(MEAL1, ADMIN_ID);
     }
 
