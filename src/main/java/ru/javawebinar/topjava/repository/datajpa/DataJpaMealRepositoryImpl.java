@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
@@ -17,10 +18,13 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        if (meal.getUser() == null | meal.getUser().getId() != userId)
-            return  null;
-        else
-            return crudRepository.save(meal);
+        if (!meal.isNew() && get(meal.getId(), userId) == null) {
+            return null;
+        }
+        User u = new User();
+        u.setId(userId);
+        meal.setUser(u);
+        return crudRepository.save(meal);
     }
 
     @Override
@@ -40,6 +44,6 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
     @Override
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-        return crudRepository.geBetweenDateTimes(startDate,endDate);
+        return crudRepository.geBetweenDateTimes(startDate,endDate,userId);
     }
 }
