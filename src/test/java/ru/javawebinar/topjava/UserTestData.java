@@ -23,6 +23,10 @@ public class UserTestData {
         assertMatch(actual, Arrays.asList(expected));
     }
 
+    public static void assertMatch(Iterable<Role> actual, Role... expected) {
+        assertThat(actual).contains(expected);
+    }
+
     public static void assertMatch(Iterable<User> actual, Iterable<User> expected) {
         assertThat(actual).usingElementComparatorIgnoringFields("registered", "roles", "meals").isEqualTo(expected);
     }

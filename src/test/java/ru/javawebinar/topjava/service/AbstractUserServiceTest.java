@@ -17,6 +17,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
@@ -74,6 +75,13 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     public void get() throws Exception {
         User user = service.get(USER_ID);
         assertMatch(user, USER);
+    }
+
+    @Test
+    public void getManyRoles(){
+        User user = service.get(ADMIN_ID);
+        Set<Role> roles = user.getRoles();
+        assertMatch(roles,Role.ROLE_ADMIN, Role.ROLE_USER);
     }
 
     @Test(expected = NotFoundException.class)
