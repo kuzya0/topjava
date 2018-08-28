@@ -20,6 +20,16 @@ public class RestFilter {
     @DateTimeFormat(iso = ISO.TIME)
     LocalTime endTime;
 
+    public RestFilter() {
+    }
+
+    public RestFilter(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public LocalDate getStartDate() {
         return startDate;
     }
