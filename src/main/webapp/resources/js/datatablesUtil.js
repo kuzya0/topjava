@@ -1,6 +1,6 @@
 function makeEditable() {
     $(".delete").click(function () {
-        deleteRow($(this).attr("id"));
+        deleteRow($(this).closest('tr').find('td:first').text());
     });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {

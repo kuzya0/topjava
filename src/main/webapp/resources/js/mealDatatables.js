@@ -1,8 +1,8 @@
-var ajaxUrl = "ajax/admin/users/";
+var ajaxUrl = "ajax/meals/";
 var datatableApi;
 
 $(function () {
-    datatableApi = $("#datatable").DataTable({
+    datatableApi = $("#mealtable").DataTable({
         "paging": false,
         "info": true,
         "columns": [
@@ -10,19 +10,13 @@ $(function () {
                 "data": "id"
             },
             {
-                "data": "name"
+                "data": "dateTime"
             },
             {
-                "data": "email"
+                "data": "description"
             },
             {
-                "data": "roles"
-            },
-            {
-                "data": "enabled"
-            },
-            {
-                "data": "registered"
+                "data": "calories"
             },
             {
                 "defaultContent": "Edit",
